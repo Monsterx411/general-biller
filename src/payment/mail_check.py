@@ -1,41 +1,66 @@
-# Mail check payment module
+# Home Loan (Mortgage) Payment Processing
 
-class MailCheckPayment:
-    """Handle mail check payment processing"""
+class HomeLoanPayment:
+    """Handle home loan/mortgage payments"""
     
-    def __init__(self):
-        self.payee_address = {}
-        self.payer_info = {}
-        self.check_amount = 0.0
+    def __init__(self, country="USA"):
+        self.country = country
+        self.mortgages = []
+        self.payment_method = {}
     
-    def set_payee_address(self, name, street, city, state, zip_code, country):
-        """Set the payee (biller) address"""
-        self.payee_address = {
-            "name": name,
-            "street": street,
-            "city": city,
-            "state": state,
-            "zip_code": zip_code,
-            "country": country
+    def add_mortgage(self, loan_id, lender_name, property_address, principal_balance, monthly_payment, interest_rate, remaining_term_months, due_date):
+        """Add a mortgage loan to track"""
+        mortgage = {
+            "loan_id": loan_id,
+            "lender_name": lender_name,
+            "property_address": property_address,
+            "principal_balance": principal_balance,
+            "monthly_payment": monthly_payment,
+            "interest_rate": interest_rate,
+            "remaining_term_months": remaining_term_months,
+            "due_date": due_date,
+            "loan_type": "mortgage",
+            "status": "active"
+        }
+        self.mortgages.append(mortgage)
+        return mortgage
+    
+    def set_payment_method_bank(self, account_number, routing_number=None, transit_number=None):
+        """Set bank account as payment method"""
+        self.payment_method = {
+            "method": "bank_transfer",
+            "account_number": account_number,
+            "routing_number": routing_number,
+            "transit_number": transit_number
         }
     
-    def set_payer_info(self, name, street, city, state, zip_code, phone, email):
-        """Set the payer information"""
-        self.payer_info = {
-            "name": name,
-            "street": street,
-            "city": city,
-            "state": state,
-            "zip_code": zip_code,
+    def set_payment_method_check(self, payer_name, address, phone, email):
+        """Set check payment method"""
+        self.payment_method = {
+            "method": "check",
+            "payer_name": payer_name,
+            "address": address,
             "phone": phone,
             "email": email
         }
     
-    def set_amount(self, amount):
-        """Set the check amount"""
-        self.check_amount = amount
+    def process_payment(self, loan_id, amount):
+        """Process mortgage payment"""
+        for mortgage in self.mortgages:
+            if mortgage["loan_id"] == loan_id:
+                mortgage["principal_balance"] -= amount
+                mortgage["remaining_term_months"] -= 1
+                return {
+                    "status": "success",
+                    "amount_paid": amount,
+                    "remaining_balance": mortgage["principal_balance"],
+                    "remaining_term": mortgage["remaining_term_months"]
+                }
+        return {"status": "error", "message": "Mortgage not found"}
     
-    def process_mail_check(self):
-        """Process and send mail check"""
-        # Placeholder for mail check processing logic
-        pass
+    def get_mortgage_details(self, loan_id):
+        """Get mortgage details"""
+        for mortgage in self.mortgages:
+            if mortgage["loan_id"] == loan_id:
+                return mortgage
+        return None

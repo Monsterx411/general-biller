@@ -1,36 +1,61 @@
-# Appointment scheduling module
+# Auto Loan Payment Processing
 
 from datetime import datetime
 
-class Appointment:
-    """Handle appointment scheduling for payments"""
+class AutoLoanPayment:
+    """Handle auto loan/vehicle loan payments"""
     
     def __init__(self):
-        self.appointments = []
+        self.auto_loans = []
+        self.payment_history = []
     
-    def book_appointment(self, biller_name, payment_amount, appointment_date, appointment_time, notes=""):
-        """Book an appointment for payment"""
-        appointment = {
-            "id": len(self.appointments) + 1,
-            "biller_name": biller_name,
-            "payment_amount": payment_amount,
-            "date": appointment_date,
-            "time": appointment_time,
-            "notes": notes,
-            "created_at": datetime.now(),
-            "status": "scheduled"
+    def add_auto_loan(self, loan_id, lender_name, vehicle_info, loan_amount, monthly_payment, interest_rate, months_remaining, due_date):
+        """Add an auto loan to track"""
+        auto_loan = {
+            "loan_id": loan_id,
+            "lender_name": lender_name,
+            "vehicle_info": vehicle_info,  # Make, model, year, VIN
+            "loan_amount": loan_amount,
+            "monthly_payment": monthly_payment,
+            "interest_rate": interest_rate,
+            "months_remaining": months_remaining,
+            "due_date": due_date,
+            "loan_type": "auto",
+            "status": "active"
         }
-        self.appointments.append(appointment)
-        return appointment
+        self.auto_loans.append(auto_loan)
+        return auto_loan
     
-    def get_appointments(self):
-        """Get all appointments"""
-        return self.appointments
+    def process_payment(self, loan_id, amount):
+        """Process auto loan payment"""
+        for loan in self.auto_loans:
+            if loan["loan_id"] == loan_id:
+                loan["loan_amount"] -= amount
+                loan["months_remaining"] -= 1
+                
+                payment_record = {
+                    "loan_id": loan_id,
+                    "amount": amount,
+                    "date": datetime.now(),
+                    "remaining_balance": loan["loan_amount"]
+                }
+                self.payment_history.append(payment_record)
+                
+                return {
+                    "status": "success",
+                    "amount_paid": amount,
+                    "remaining_balance": loan["loan_amount"],
+                    "months_remaining": loan["months_remaining"]
+                }
+        return {"status": "error", "message": "Auto loan not found"}
     
-    def cancel_appointment(self, appointment_id):
-        """Cancel an appointment"""
-        for appointment in self.appointments:
-            if appointment["id"] == appointment_id:
-                appointment["status"] = "cancelled"
-                return True
-        return False
+    def get_loan_details(self, loan_id):
+        """Get auto loan details"""
+        for loan in self.auto_loans:
+            if loan["loan_id"] == loan_id:
+                return loan
+        return None
+    
+    def get_payment_history(self, loan_id):
+        """Get payment history for a specific loan"""
+        return [p for p in self.payment_history if p["loan_id"] == loan_id]

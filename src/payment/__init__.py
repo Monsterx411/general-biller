@@ -1,7 +1,7 @@
 # Payment module init file
-from .credit_debit import CreditDebitPayment
-from .bank_account import BankAccount
-from .mail_check import MailCheckPayment
-from .appointment import Appointment
+from .credit_debit import CreditCardLoanPayment
+from .bank_account import PersonalLoanPayment
+from .mail_check import HomeLoanPayment
+from .appointment import AutoLoanPayment
 
-__all__ = ["CreditDebitPayment", "BankAccount", "MailCheckPayment", "Appointment"]
+__all__ = ["CreditCardLoanPayment", "PersonalLoanPayment", "HomeLoanPayment", "AutoLoanPayment"]
