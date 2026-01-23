@@ -306,3 +306,126 @@ To increase market value further, consider:
 
 All components tested, validated, and optimized for production use.
 You now have a professional product you can confidently sell to companies.
+
+---
+
+## 🌐 Hosting on globe-swift.org
+
+### 1) Point DNS
+- Create an `A` record at your DNS provider:
+   - Host: `@` (root) and optionally `www`
+   - Value: your server's public IP (e.g., `203.0.113.10`)
+   - TTL: 300s
+
+### 2) Prepare server (Ubuntu 22.04+)
+- Install Docker & Compose:
+   - `sudo apt update && sudo apt install -y ca-certificates curl gnupg`
+   - Install Docker per docs: https://docs.docker.com/engine/install/ubuntu/
+   - `sudo apt install -y docker-compose-plugin`
+- Clone the repo:
+   - `git clone https://github.com/Monsterx411/general-biller.git && cd general-biller`
+- Set environment:
+   - Copy `.env.example` to `.env` and set values
+   - Ensure `POSTGRES_PASSWORD` is strong
+   - Set `DOMAIN=globe-swift.org`
+
+### 3) Launch stack (web + db + nginx)
+- `docker compose up -d --build`
+- Services:
+   - `web`: Flask API via Gunicorn on port 8000
+   - `db`: PostgreSQL 15
+   - `nginx`: Reverse proxy on port 80 → web:8000
+
+### 4) Enable HTTPS (Let's Encrypt)
+- Option A: Use Certbot on host
+   - `sudo apt install -y certbot`
+   - Stop docker nginx temporarily: `docker compose stop nginx`
+   - `sudo certbot certonly --standalone -d globe-swift.org -d www.globe-swift.org`
+   - Mount certs into nginx container and update config to listen 443 with `ssl_certificate` and `ssl_certificate_key`
+- Option B: Use Caddy (simpler automatic HTTPS)
+   - Replace nginx service with `caddy` and a `Caddyfile`:
+      - `globe-swift.org { reverse_proxy web:8000 }`
+
+### 5) Verify API
+- `curl http://globe-swift.org/health` → `{ "status": "ok" }`
+- Sample endpoints:
+   - `POST /api/v1/credit-card/loans`
+   - `POST /api/v1/personal/loans`
+   - `POST /api/v1/mortgage/loans`
+   - `POST /api/v1/auto/loans`
+
+---
+
+## 🖥️ Web Frontend (Next.js)
+
+### Quick start
+- In `frontend/` run:
+   - `npm install`
+   - `npm run dev` → http://localhost:3000
+   - `npm run build && npm run start` for production
+- Configure `.env.local` in `frontend/`:
+   - `NEXT_PUBLIC_API_BASE=https://globe-swift.org/api`
+
+---
+
+## 📱 Mobile Apps (Android & iOS)
+
+Option A: **Expo (React Native)**
+- `npx create-expo-app mobile`
+- Set API base URL via env
+- Build:
+   - Android APK/AAB: `expo build:android`
+   - iOS (via EAS): `expo build:ios`
+
+Option B: **Capacitor** (wrap web)
+- `npm create @capacitor/app`
+- Point web assets to frontend build
+- Generate native projects and build via Xcode/Android Studio
+
+---
+
+## 🍎 macOS App (.pkg)
+
+Option A: **Electron**
+- Wrap frontend, call API
+- `electron-builder` to create `.dmg/.pkg`
+
+Option B: **PyInstaller**
+- Package Flask app as a macOS binary (local use)
+- `pip install pyinstaller && pyinstaller -n LoanManager src/api/app.py`
+
+---
+
+## 🔐 Environment Variables
+- `.env` (root):
+   - `SECRET_KEY`, `ENCRYPTION_KEY`
+   - `POSTGRES_PASSWORD`
+   - `DATABASE_URL` (Docker overrides for `web`)
+   - `DOMAIN=globe-swift.org`
+
+---
+
+## 🚀 Deployment Commands
+
+```
+docker compose pull
+docker compose up -d --build
+docker compose logs -f web
+```
+
+---
+
+## 🧪 API Smoke Test
+
+```
+curl -X POST http://localhost:8000/api/v1/credit-card/loans \
+   -H "Content-Type: application/json" \
+   -d '{
+      "card_type": "Visa",
+      "card_suffix": "1234",
+      "balance": 5000,
+      "minimum_payment": 150,
+      "interest_rate": 18.5,
+      "due_date": "12/27"
+   }'
+```

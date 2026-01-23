@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://app_user:${POSTGRES_PASSWORD}@db:5432/loan_manager
+      - ENVIRONMENT=production
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - nginx
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_DB=loan_manager
+      - POSTGRES_USER=app_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  nginx:
+    image: nginx:1.25
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+volumes:
+  pgdata:

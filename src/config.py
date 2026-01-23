@@ -32,9 +32,9 @@ class Config:
     LOG_DIR = os.getenv('LOG_DIR', 'logs')
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
     
-    # USA Specific
-    USA_MIN_ROUTING = 010000000
-    USA_MAX_ROUTING = 121000248
+    # USA Specific (as strings to preserve leading zeros)
+    USA_MIN_ROUTING = '010000000'
+    USA_MAX_ROUTING = '121000248'
     
     # Canada Specific
     CANADA_TRANSIT_LENGTH = 5
