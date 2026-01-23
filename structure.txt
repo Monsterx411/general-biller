@@ -1,0 +1,30 @@
+# Workspace Structure for General Biller (US & CA)
+
+## Root Directory
+- README
+
+## Features
+1. **Payment Methods**
+   - Credit/Debit Cards
+     - Billing Address
+     - Zip Code
+   - Bank Account Information
+     - **USA**
+       - Bank Name
+       - Type of Account
+       - Account Number
+       - Routing Number
+       - Account Owner Name and Address
+     - **Canada**
+       - Bank Name
+       - Type of Account
+       - Account Number
+       - Institution
+       - Bank Transit Number
+       - Account Owner Name and Address
+   - Bank Linking by Logging into Your Account
+   - Mail Check Payment
+     - Fill in Address
+     - Fill in Payment Information
+     - Amount of Payment
+   - Book an Appointment for Payment

@@ -1,0 +1,64 @@
+# USA & CANADA BILL PAYER
+
+#
+**Features***
+Being able to make payments to your biller of any kind using this payment methods
+
+# 1. Credit/Debit Cards matching them with the right billing adress or zip code for the card
+# 2. Bank account information 
+      USA {
+        Bank Name
+        Type of Account
+        Account Number
+        Routine Number
+        Accoun Owner Name and Address
+      }
+      Canada {
+        Bank Name
+        Type of Account
+        Account Number
+        Institution
+        Bank Transit Number
+        Accoun Owner Name and Address
+
+      }
+
+# 3. Bank linking by login into your account 
+# 4. Mail check  Payment to your Biller by filling there address and filling your information expected in the payment for the mailing and the amount of the payemnt then we can help you mail the paymets to the company       
+
+# 5. Book an appointment for the payment 
+
+
+################################################
+#                                              #
+# STRUCTURE                                    #
+#                                              #
+################################################
+
+
+/General Biller (US & CA)
+│
+├── /src
+│   ├── /payment
+│   │   ├── credit_debit.py        # Handle credit/debit card payments
+│   │   ├── bank_account.py        # Manage bank account information
+│   │   ├── mail_check.py          # Handle mail check payments
+│   │   └── appointment.py          # Manage appointment scheduling
+│   │
+│   ├── /bank_linking
+│   │   └── bank_login.py          # Logic for bank account linking
+│   │
+│   ├── /utils
+│   │   ├── validators.py           # Input validation functions
+│   │   └── helpers.py              # Helper functions
+│   │
+│   └── main.py                    # Main entry point of the application
+│
+├── /tests
+│   ├── test_payment.py             # Unit tests for payment module
+│   ├── test_bank_linking.py        # Unit tests for bank linking
+│   └── test_utils.py               # Unit tests for utility functions
+│
+├── requirements.txt                # List of dependencies
+├── README.md                       # Project documentation
+└── structure.txt                   # Workspace structure
