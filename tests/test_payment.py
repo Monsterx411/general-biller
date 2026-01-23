@@ -1,25 +1,28 @@
-# Unit tests for payment module
+# Unit tests for payment module - Production Grade
 import pytest
 from src.payment import CreditCardLoanPayment, PersonalLoanPayment, HomeLoanPayment, AutoLoanPayment
 
 def test_credit_card_loan_creation():
     payment = CreditCardLoanPayment()
-    loan = payment.add_credit_card_loan("Visa", "1234", 5000, 150, 18.5, "12/25")
-    assert loan["card_issuer"] == "Visa"
-    assert loan["balance"] == 5000
+    result = payment.add_credit_card_loan("Visa", "1234", 5000, 150, 18.5, "12/25")
+    assert result["status"] == "success"
+    assert result["loan"]["card_issuer"] == "Visa"
+    assert result["loan"]["balance"] == 5000
 
 def test_credit_card_payment():
     payment = CreditCardLoanPayment()
     payment.add_credit_card_loan("Mastercard", "5678", 3000, 100, 16.9, "01/20")
+    payment.set_payment_method("4532015112830366", "12/27", "123", "123 Main St")
     result = payment.process_payment("Mastercard", 500)
     assert result["status"] == "success"
     assert result["remaining_balance"] == 2500
 
 def test_personal_loan_creation():
     loan = PersonalLoanPayment("USA")
-    personal_loan = loan.add_personal_loan("PL001", "SoFi", 15000, 300, 8.5, "15th")
-    assert personal_loan["loan_id"] == "PL001"
-    assert personal_loan["balance"] == 15000
+    result = loan.add_personal_loan("PL001", "SoFi", 15000, 300, 8.5, "15th")
+    assert result["status"] == "success"
+    assert result["loan"]["loan_id"] == "PL001"
+    assert result["loan"]["balance"] == 15000
 
 def test_personal_loan_payment():
     loan = PersonalLoanPayment("USA")
