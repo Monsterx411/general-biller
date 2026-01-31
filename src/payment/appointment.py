@@ -11,20 +11,23 @@ class AutoLoanPayment:
     
     def add_auto_loan(self, loan_id, lender_name, vehicle_info, loan_amount, monthly_payment, interest_rate, months_remaining, due_date):
         """Add an auto loan to track"""
-        auto_loan = {
-            "loan_id": loan_id,
-            "lender_name": lender_name,
-            "vehicle_info": vehicle_info,  # Make, model, year, VIN
-            "loan_amount": loan_amount,
-            "monthly_payment": monthly_payment,
-            "interest_rate": interest_rate,
-            "months_remaining": months_remaining,
-            "due_date": due_date,
-            "loan_type": "auto",
-            "status": "active"
-        }
-        self.auto_loans.append(auto_loan)
-        return auto_loan
+        try:
+            auto_loan = {
+                "loan_id": loan_id,
+                "lender_name": lender_name,
+                "vehicle_info": vehicle_info,  # Make, model, year, VIN
+                "loan_amount": loan_amount,
+                "monthly_payment": monthly_payment,
+                "interest_rate": interest_rate,
+                "months_remaining": months_remaining,
+                "due_date": due_date,
+                "loan_type": "auto",
+                "status": "active"
+            }
+            self.auto_loans.append(auto_loan)
+            return {"status": "success", "message": "Auto loan added successfully", "loan": auto_loan}
+        except Exception as e:
+            return {"status": "error", "message": f"Failed to add auto loan: {str(e)}"}
     
     def process_payment(self, loan_id, amount):
         """Process auto loan payment"""

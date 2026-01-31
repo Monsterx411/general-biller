@@ -46,13 +46,16 @@ class CreditCardLoanPayment:
     def set_payment_method(self, card_number, expiry, cvv, billing_address):
         """Set the card to use for making payments with validation"""
         try:
+            # Clean card number (remove spaces and dashes)
+            card_number = str(card_number).replace(" ", "").replace("-", "")
+            
             if not validate_credit_card_number(card_number):
                 return {"status": "error", "message": "Invalid credit card number"}
             
             if not validate_expiry_date(expiry):
                 return {"status": "error", "message": "Invalid or expired card"}
             
-            if not validate_cvv(cvv):
+            if not validate_cvv(str(cvv)):
                 return {"status": "error", "message": "Invalid CVV"}
             
             self.payment_method = {

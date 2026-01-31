@@ -1,10 +1,11 @@
 import jwt
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from flask import request, jsonify
 
-SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
+# Generate secure SECRET_KEY if not provided
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production-min-32-chars")
 
 class TokenManager:
     """Manage JWT token generation and validation"""
@@ -12,10 +13,11 @@ class TokenManager:
     @staticmethod
     def generate_token(user_id, expires_in=86400):
         """Generate a JWT token valid for 24 hours by default"""
+        now = datetime.now(timezone.utc)
         payload = {
             "user_id": user_id,
-            "iat": datetime.utcnow(),
-            "exp": datetime.utcnow() + timedelta(seconds=expires_in),
+            "iat": now,
+            "exp": now + timedelta(seconds=expires_in),
         }
         return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
     

@@ -1,7 +1,7 @@
 import logging
 import uuid
 from flask import request, g
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -15,13 +15,13 @@ class RequestLogger:
         @app.before_request
         def before_request():
             g.request_id = str(uuid.uuid4())
-            g.start_time = datetime.utcnow()
+            g.start_time = datetime.now(timezone.utc)
             logger.info(f"[{g.request_id}] {request.method} {request.path}")
         
         @app.after_request
         def after_request(response):
             if hasattr(g, "start_time"):
-                elapsed = (datetime.utcnow() - g.start_time).total_seconds()
+                elapsed = (datetime.now(timezone.utc) - g.start_time).total_seconds()
                 logger.info(
                     f"[{g.request_id}] {request.method} {request.path} "
                     f"{response.status_code} ({elapsed:.3f}s)"

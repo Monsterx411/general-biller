@@ -4,7 +4,7 @@ Authentication and Token Management Tests
 
 import pytest
 import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from src.utils.token import TokenManager, token_required, SECRET_KEY
 from flask import Flask, jsonify
 import json
@@ -94,10 +94,11 @@ class TestTokenVerification:
         user_id = "test-user-expired"
         
         # Create an expired token (expired 1 hour ago)
+        now = datetime.now(timezone.utc)
         payload = {
             "user_id": user_id,
-            "iat": datetime.utcnow() - timedelta(hours=2),
-            "exp": datetime.utcnow() - timedelta(hours=1),
+            "iat": now - timedelta(hours=2),
+            "exp": now - timedelta(hours=1),
         }
         expired_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
         
@@ -124,10 +125,11 @@ class TestTokenVerification:
     def test_verify_wrong_secret(self):
         """Test token created with different secret fails verification"""
         # Create token with different secret
+        now = datetime.now(timezone.utc)
         payload = {
             "user_id": "test-user",
-            "iat": datetime.utcnow(),
-            "exp": datetime.utcnow() + timedelta(hours=1),
+            "iat": now,
+            "exp": now + timedelta(hours=1),
         }
         wrong_token = jwt.encode(payload, "wrong-secret-key", algorithm="HS256")
         
@@ -168,10 +170,11 @@ class TestTokenRequiredDecorator:
     def test_access_protected_with_expired_token(self, client):
         """Test accessing protected endpoint with expired token"""
         # Create expired token
+        now = datetime.now(timezone.utc)
         payload = {
             "user_id": "test-user",
-            "iat": datetime.utcnow() - timedelta(hours=2),
-            "exp": datetime.utcnow() - timedelta(hours=1),
+            "iat": now - timedelta(hours=2),
+            "exp": now - timedelta(hours=1),
         }
         expired_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
         

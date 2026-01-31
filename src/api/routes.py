@@ -131,6 +131,35 @@ def add_personal_loan():
             pass
     return result, status_code
 
+@api_bp.post("/v1/personal/bank-account")
+def set_bank_account():
+    """Unified endpoint for setting bank account (USA or Canada)"""
+    data = request.get_json(force=True)
+    country = data.get("country", "USA").upper()
+    
+    if country == "USA":
+        result = personal_service.set_usa_bank_account(
+            data.get("bank_name", "Bank"),
+            data.get("account_type", "checking"),
+            data.get("account_number"),
+            data.get("routing_number"),
+            data.get("owner_name", "John Doe"),
+            data.get("address", "123 Main St"),
+            data.get("available_balance", 50000),
+        )
+    else:
+        result = personal_service.set_canada_bank_account(
+            data.get("bank_name", "Bank"),
+            data.get("account_type", "chequing"),
+            data.get("account_number"),
+            data.get("institution_number"),
+            data.get("transit_number"),
+            data.get("owner_name", "John Doe"),
+            data.get("address", "123 Main St"),
+            data.get("available_balance", 50000),
+        )
+    return result, (200 if result.get("status") == "success" else 400)
+
 @api_bp.post("/v1/personal/bank/usa")
 def set_usa_bank():
     data = request.get_json(force=True)

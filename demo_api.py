@@ -73,7 +73,7 @@ def demo_credit_card():
     response = requests.post(
         f"{BASE_URL}/v1/credit-card/payment-method",
         json={
-            "card_number": "4532123456789012",
+            "card_number": "4532015112830366",  # Valid test Visa card
             "expiry": "12/26",
             "cvv": "123",
             "billing_address": "123 Main St, New York, NY 10001"

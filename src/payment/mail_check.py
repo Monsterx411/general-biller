@@ -10,29 +10,35 @@ class HomeLoanPayment:
     
     def add_mortgage(self, loan_id, lender_name, property_address, principal_balance, monthly_payment, interest_rate, remaining_term_months, due_date):
         """Add a mortgage loan to track"""
-        mortgage = {
-            "loan_id": loan_id,
-            "lender_name": lender_name,
-            "property_address": property_address,
-            "principal_balance": principal_balance,
-            "monthly_payment": monthly_payment,
-            "interest_rate": interest_rate,
-            "remaining_term_months": remaining_term_months,
-            "due_date": due_date,
-            "loan_type": "mortgage",
-            "status": "active"
-        }
-        self.mortgages.append(mortgage)
-        return mortgage
+        try:
+            mortgage = {
+                "loan_id": loan_id,
+                "lender_name": lender_name,
+                "property_address": property_address,
+                "principal_balance": principal_balance,
+                "monthly_payment": monthly_payment,
+                "interest_rate": interest_rate,
+                "remaining_term_months": remaining_term_months,
+                "due_date": due_date,
+                "loan_type": "mortgage",
+                "status": "active"
+            }
+            self.mortgages.append(mortgage)
+            return {"status": "success", "message": "Mortgage added successfully", "mortgage": mortgage}
+        except Exception as e:
+            return {"status": "error", "message": f"Failed to add mortgage: {str(e)}"}
     
-    def set_payment_method_bank(self, account_number, routing_number=None, transit_number=None):
+    def set_payment_method_bank(self, routing_or_transit, account_number):
         """Set bank account as payment method"""
-        self.payment_method = {
-            "method": "bank_transfer",
-            "account_number": account_number,
-            "routing_number": routing_number,
-            "transit_number": transit_number
-        }
+        try:
+            self.payment_method = {
+                "method": "bank_transfer",
+                "account_number": account_number,
+                "routing_or_transit": routing_or_transit
+            }
+            return {"status": "success", "message": "Bank payment method set"}
+        except Exception as e:
+            return {"status": "error", "message": f"Failed to set payment method: {str(e)}"}
     
     def set_payment_method_check(self, payer_name, address, phone, email):
         """Set check payment method"""
