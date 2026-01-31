@@ -3,7 +3,9 @@ from flask_cors import CORS
 from src.config import get_config
 from src.models.db import init_db
 from src.utils.middleware import RequestLogger, ErrorHandler
+from src.utils.security_middleware import SecurityHeaders, HTTPSRedirect
 from .routes import api_bp
+from .auth_routes import auth_bp
 
 
 def create_app():
@@ -12,21 +14,31 @@ def create_app():
     app.config.from_object(config)
     app.config['JSON_SORT_KEYS'] = False
 
-    CORS(app)
+    # CORS configuration - restrict in production
+    if config.ENVIRONMENT == 'production':
+        CORS(app, origins=["https://yourdomain.com"])  # Configure allowed origins
+    else:
+        CORS(app)
+
+    # Register security middleware
+    SecurityHeaders.setup(app)
+    if config.ENVIRONMENT == 'production':
+        HTTPSRedirect.setup(app)
 
     # Register logging and error handlers
     RequestLogger.setup(app)
     ErrorHandler.setup(app)
 
-    # Register API blueprint
+    # Register blueprints
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(api_bp, url_prefix="/api")
 
     # Initialize database tables if needed
     try:
         init_db()
-    except Exception:
+    except Exception as e:
         # Avoid crashing if DB not reachable; web can still run
-        pass
+        print(f"Database initialization warning: {e}")
 
     @app.get("/health")
     def health():

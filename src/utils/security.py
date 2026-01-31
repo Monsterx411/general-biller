@@ -4,6 +4,7 @@ import hashlib
 import hmac
 import secrets
 from typing import Optional
+from passlib.hash import pbkdf2_sha256
 
 class SecurityManager:
     """Manage security operations including encryption and hashing"""
@@ -66,3 +67,46 @@ class SecurityManager:
             "valid": len(errors) == 0,
             "errors": errors
         }
+
+
+# Enhanced password hashing using passlib (production-ready)
+def hash_password(password: str) -> str:
+    """Hash password using PBKDF2-SHA256 with 100k iterations"""
+    return pbkdf2_sha256.hash(password, rounds=100000)
+
+
+def verify_password(password: str, password_hash: str) -> bool:
+    """Verify password against hash"""
+    try:
+        return pbkdf2_sha256.verify(password, password_hash)
+    except Exception:
+        return False
+
+
+def validate_password_strength(password: str) -> dict:
+    """
+    Validate password meets security requirements
+    Requirements: 8+ chars, uppercase, lowercase, number, special char
+    """
+    errors = []
+    
+    if len(password) < 8:
+        errors.append("Password must be at least 8 characters long")
+    
+    if not any(c.isupper() for c in password):
+        errors.append("Password must contain at least one uppercase letter")
+    
+    if not any(c.islower() for c in password):
+        errors.append("Password must contain at least one lowercase letter")
+    
+    if not any(c.isdigit() for c in password):
+        errors.append("Password must contain at least one number")
+    
+    special_chars = "!@#$%^&*()_+-=[]{}|;:,.<>?"
+    if not any(c in special_chars for c in password):
+        errors.append("Password must contain at least one special character")
+    
+    return {
+        "valid": len(errors) == 0,
+        "errors": errors
+    }
