@@ -35,7 +35,7 @@ class AuditLog(Base):
     # Details
     old_value = Column(JSON)  # State before action
     new_value = Column(JSON)  # State after action
-    meta_data = Column(JSON)  # Additional context (renamed from metadata to avoid conflict)
+    context_data = Column(JSON)  # Additional context (renamed from metadata for clarity)
     
     # Result
     status = Column(String(20))  # success, failure, error
@@ -55,7 +55,7 @@ class AuditLog(Base):
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
             "ip_address": self.ip_address,
             "status": self.status,
-            "metadata": self.meta_data,
+            "context": self.context_data,
         }
 
 

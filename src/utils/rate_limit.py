@@ -106,9 +106,11 @@ def rate_limit(max_requests: int = 100, window_seconds: int = 60, key_func=None)
             # Add rate limit headers
             response = f(*args, **kwargs)
             if isinstance(response, tuple):
-                response_obj, status_code = response[0], response[1] if len(response) > 1 else 200
+                response_obj = response[0]
+                status_code = response[1] if len(response) > 1 else 200
             else:
-                response_obj, status_code = response, 200
+                response_obj = response
+                status_code = 200
             
             remaining = rate_limiter.get_remaining(key, max_requests, window_seconds)
             

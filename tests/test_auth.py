@@ -27,8 +27,10 @@ def app():
     # Cleanup
     try:
         os.remove('test_auth.db')
-    except:
-        pass
+    except FileNotFoundError:
+        pass  # File doesn't exist, which is fine
+    except Exception as e:
+        print(f"Warning: Could not remove test database: {e}")
 
 
 @pytest.fixture

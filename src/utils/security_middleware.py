@@ -34,15 +34,29 @@ class SecurityHeaders:
                 response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
             
             # Content Security Policy
-            response.headers['Content-Security-Policy'] = (
-                "default-src 'self'; "
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
-                "style-src 'self' 'unsafe-inline'; "
-                "img-src 'self' data: https:; "
-                "font-src 'self'; "
-                "connect-src 'self'; "
-                "frame-ancestors 'none';"
-            )
+            # Note: 'unsafe-inline' and 'unsafe-eval' are development-only
+            # In production, use nonces or hashes for inline scripts
+            if app.config.get('ENVIRONMENT') == 'production':
+                response.headers['Content-Security-Policy'] = (
+                    "default-src 'self'; "
+                    "script-src 'self'; "
+                    "style-src 'self'; "
+                    "img-src 'self' data: https:; "
+                    "font-src 'self'; "
+                    "connect-src 'self'; "
+                    "frame-ancestors 'none';"
+                )
+            else:
+                # Development mode - allows inline scripts for debugging
+                response.headers['Content-Security-Policy'] = (
+                    "default-src 'self'; "
+                    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+                    "style-src 'self' 'unsafe-inline'; "
+                    "img-src 'self' data: https:; "
+                    "font-src 'self'; "
+                    "connect-src 'self'; "
+                    "frame-ancestors 'none';"
+                )
             
             # Referrer Policy
             response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'

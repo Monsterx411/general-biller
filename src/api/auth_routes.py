@@ -21,7 +21,7 @@ from src.utils.rate_limit import rate_limit, get_user_key
 auth_bp = Blueprint("auth", __name__)
 
 
-def log_audit(db, user_id, action, status, ip_address=None, meta_data=None):
+def log_audit(db, user_id, action, status, ip_address=None, context_data=None):
     """Helper to log audit events"""
     try:
         audit = AuditLog(
@@ -31,12 +31,14 @@ def log_audit(db, user_id, action, status, ip_address=None, meta_data=None):
             ip_address=ip_address or request.remote_addr,
             user_agent=request.headers.get('User-Agent', '')[:255],
             request_id=str(uuid.uuid4()),
-            meta_data=meta_data
+            context_data=context_data
         )
         db.add(audit)
         db.commit()
-    except Exception:
-        pass
+    except Exception as e:
+        # Log audit failure for monitoring
+        print(f"AUDIT LOG FAILURE: {action} for user {user_id}: {str(e)}")
+        # In production, send to monitoring service (e.g., Sentry, CloudWatch)
 
 
 @auth_bp.post("/register")
@@ -99,7 +101,7 @@ def register():
         db.refresh(user)
         
         # Log registration
-        log_audit(db, user.id, "user.registered", "success", meta_data={"email": email})
+        log_audit(db, user.id, "user.registered", "success", context_data={"email": email})
         
         return jsonify({
             "message": "Registration successful",
@@ -135,13 +137,13 @@ def login():
         if not user:
             # Log failed attempt
             log_audit(db, None, "user.login_failed", "failure", 
-                     meta_data={"email": email, "reason": "user_not_found"})
+                     context_data={"email": email, "reason": "user_not_found"})
             return jsonify({"error": "Invalid credentials"}), 401
         
         # Check if account is locked
         if user.is_locked():
             log_audit(db, user.id, "user.login_locked", "failure",
-                     meta_data={"locked_until": user.locked_until.isoformat()})
+                     context_data={"locked_until": user.locked_until.isoformat()})
             return jsonify({
                 "error": "Account temporarily locked",
                 "locked_until": user.locked_until.isoformat()
@@ -159,7 +161,7 @@ def login():
             db.commit()
             
             log_audit(db, user.id, "user.login_failed", "failure",
-                     meta_data={"reason": "invalid_password", "attempts": user.failed_login_attempts})
+                     context_data={"reason": "invalid_password", "attempts": user.failed_login_attempts})
             
             return jsonify({"error": "Invalid credentials"}), 401
         
@@ -175,7 +177,7 @@ def login():
             totp = pyotp.TOTP(user.mfa_secret)
             if not totp.verify(mfa_code, valid_window=1):
                 log_audit(db, user.id, "user.login_failed", "failure",
-                         meta_data={"reason": "invalid_mfa"})
+                         context_data={"reason": "invalid_mfa"})
                 return jsonify({"error": "Invalid MFA code"}), 401
         
         # Check if account is active
@@ -204,7 +206,7 @@ def login():
         db.commit()
         
         log_audit(db, user.id, "user.login_success", "success",
-                 meta_data={"session_id": session.id})
+                 context_data={"session_id": session.id})
         
         return jsonify({
             "access_token": token,
@@ -238,7 +240,7 @@ def logout():
         # Revoke all user sessions (or just current one)
         sessions = db.query(UserSession).filter(
             UserSession.user_id == user_id,
-            UserSession.revoked_at == None
+            UserSession.revoked_at.is_(None)
         ).all()
         
         for session in sessions:
@@ -357,7 +359,7 @@ def enable_mfa():
         totp = pyotp.TOTP(user.mfa_secret)
         if not totp.verify(code, valid_window=1):
             log_audit(db, user_id, "mfa.enable_failed", "failure",
-                     meta_data={"reason": "invalid_code"})
+                     context_data={"reason": "invalid_code"})
             return jsonify({"error": "Invalid MFA code"}), 401
         
         # Enable MFA
@@ -409,7 +411,7 @@ def disable_mfa():
         # Verify password
         if not user.check_password(password):
             log_audit(db, user_id, "mfa.disable_failed", "failure",
-                     meta_data={"reason": "invalid_password"})
+                     context_data={"reason": "invalid_password"})
             return jsonify({"error": "Invalid password"}), 401
         
         # Disable MFA
