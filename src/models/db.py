@@ -10,8 +10,11 @@ Base = declarative_base()
 
 
 def init_db():
+    """Initialize all database tables"""
     from .loan import Loan
     from .payment import Payment
+    from .user import User, UserSession
+    from .audit import AuditLog, Transaction
     Base.metadata.create_all(bind=engine)
 
 
