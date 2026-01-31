@@ -4,6 +4,12 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
 import os
+import sys
+from pathlib import Path
+
+# Add app directory to path for imports
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from src.models.db import Base
 
 config = context.config
