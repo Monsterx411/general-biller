@@ -4,7 +4,7 @@ User model for authentication and authorization
 
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, Boolean, DateTime, Integer
+from sqlalchemy import Column, String, Boolean, DateTime, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from .db import Base
 from src.utils.security import hash_password, verify_password
@@ -37,8 +37,8 @@ class User(Base):
     
     # Relationships
     loans = relationship("Loan", back_populates="user")
-    sessions = relationship("UserSession", back_populates="user")
-    audit_logs = relationship("AuditLog", back_populates="user")
+    sessions = relationship("UserSession", back_populates="user", foreign_keys='UserSession.user_id')
+    audit_logs = relationship("AuditLog", back_populates="user", foreign_keys='AuditLog.user_id')
     
     def set_password(self, password: str):
         """Hash and set password"""
@@ -80,7 +80,7 @@ class UserSession(Base):
     __tablename__ = "user_sessions"
     
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String(36), nullable=False, index=True)
+    user_id = Column(String(36), ForeignKey('users.id'), nullable=False, index=True)
     token_hash = Column(String(255), nullable=False)  # Hashed JWT token
     
     # Session info
@@ -94,7 +94,7 @@ class UserSession(Base):
     revoked_at = Column(DateTime)
     
     # Relationships
-    user = relationship("User", back_populates="sessions")
+    user = relationship("User", back_populates="sessions", foreign_keys=[user_id])
     
     def is_valid(self) -> bool:
         """Check if session is still valid"""

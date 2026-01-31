@@ -4,7 +4,7 @@ Audit logging models for compliance and security
 
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, Text, JSON, Boolean
+from sqlalchemy import Column, String, DateTime, Text, JSON, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from .db import Base
 
@@ -16,7 +16,7 @@ class AuditLog(Base):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     
     # Who
-    user_id = Column(String(36), index=True)  # Null for system actions
+    user_id = Column(String(36), ForeignKey('users.id'), index=True)  # Null for system actions
     session_id = Column(String(36))
     
     # What
@@ -42,7 +42,7 @@ class AuditLog(Base):
     error_message = Column(Text)
     
     # Relationships
-    user = relationship("User", back_populates="audit_logs")
+    user = relationship("User", back_populates="audit_logs", foreign_keys=[user_id])
     
     def to_dict(self):
         """Convert to dictionary"""
