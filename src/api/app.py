@@ -1,3 +1,11 @@
+"""
+General Biller - Enterprise Bill Payment System
+Flask API Application
+
+Copyright (c) 2026 General Biller Contributors
+Licensed under the MIT License - see LICENSE file for details
+"""
+
 from flask import Flask
 from flask_cors import CORS
 from src.config import get_config

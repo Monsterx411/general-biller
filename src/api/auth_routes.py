@@ -1,5 +1,9 @@
 """
-Authentication and user management routes
+General Biller - Enterprise Bill Payment System
+Authentication and User Management Routes
+
+Copyright (c) 2026 General Biller Contributors
+Licensed under the MIT License - see LICENSE file for details
 """
 
 from flask import Blueprint, request, jsonify

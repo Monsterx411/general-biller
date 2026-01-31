@@ -1,6 +1,10 @@
 """
+General Biller - Enterprise Bill Payment System
 Loan Payment Manager - USA & CANADA
 Complete loan payment management system for multiple loan types
+
+Copyright (c) 2026 General Biller Contributors
+Licensed under the MIT License - see LICENSE file for details
 """
 
 from src.payment import CreditCardLoanPayment, PersonalLoanPayment, HomeLoanPayment, AutoLoanPayment

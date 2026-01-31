@@ -65,3 +65,8 @@ Thumbs.db
 # Environment variables
 .env
 .env.local
+
+# Database files
+loan_manager.db
+test_*.db
+*.db-journal

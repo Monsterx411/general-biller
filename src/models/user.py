@@ -1,5 +1,9 @@
 """
-User model for authentication and authorization
+General Biller - Enterprise Bill Payment System
+User Model for Authentication and Authorization
+
+Copyright (c) 2026 General Biller Contributors
+Licensed under the MIT License - see LICENSE file for details
 """
 
 import uuid

@@ -1,7 +1,28 @@
 {
-  "name": "loan-manager-frontend",
-  "version": "0.1.0",
+  "name": "general-biller-frontend",
+  "version": "2.0.0",
+  "description": "Enterprise bill payment system frontend - Secure loan and bill payment management for USA and Canada",
+  "author": "Monsterx411",
+  "license": "MIT",
   "private": true,
+  "keywords": [
+    "bill payment",
+    "loan management",
+    "fintech",
+    "banking",
+    "USA",
+    "Canada",
+    "nextjs",
+    "react"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Monsterx411/general-biller.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Monsterx411/general-biller/issues"
+  },
+  "homepage": "https://github.com/Monsterx411/general-biller#readme",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -1,6 +1,10 @@
 """
-Encryption utilities for sensitive data protection
-PCI DSS compliant field-level encryption
+General Biller - Enterprise Bill Payment System
+Encryption Utilities for Sensitive Data Protection
+PCI DSS Compliant Field-Level Encryption
+
+Copyright (c) 2026 General Biller Contributors
+Licensed under the MIT License - see LICENSE file for details
 """
 
 import os

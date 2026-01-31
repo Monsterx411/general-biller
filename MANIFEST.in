@@ -1,0 +1,36 @@
+# Manifest file for Python package distribution
+# Includes additional files beyond Python source code
+
+# Documentation
+include README.md
+include README_ENHANCED.md
+include API_DOCUMENTATION.md
+include SECURITY.md
+include DEPLOYMENT.md
+include ENHANCEMENT_SUMMARY.md
+include LICENSE
+include CHANGELOG.md
+
+# Configuration
+include requirements.txt
+include .env.example
+include alembic.ini
+include docker-compose.yml
+include Dockerfile
+
+# Scripts
+include deploy.sh
+include demo_api.py
+
+# Exclude unnecessary files
+exclude loan_manager.db
+exclude test_*.db
+recursive-exclude tests *
+recursive-exclude frontend *
+recursive-exclude mobile *
+recursive-exclude desktop *
+recursive-exclude .git *
+recursive-exclude .github *
+recursive-exclude __pycache__ *
+recursive-exclude *.pyc *
+recursive-exclude *.pyo *
