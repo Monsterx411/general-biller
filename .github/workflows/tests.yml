@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       matrix:
         python-version: ['3.11', '3.12', '3.13']
@@ -57,7 +57,7 @@ jobs:
       if: always()
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: test
     if: github.ref == 'refs/heads/main'
     
